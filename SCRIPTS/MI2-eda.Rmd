@@ -1,0 +1,61 @@
+```{R}
+require("knitr")
+datadir <- "C:/Users/User/Downloads"
+sourcedir <-
+  "C:/Users/User/Downloads"
+opts_knit$set(root.dir = sourcedir)
+library(forecast)
+library(mtsdi)
+library(MTS)
+library(mtsdi)
+library(forecast)
+library(ggplot2)
+library(lubridate)
+library(tidyverse)
+library(ggfortify)
+library(ggpubr)
+library(tseries)
+```
+
+```{R}
+setwd(datadir)
+
+maine = read.csv('maine.csv')
+```
+
+```{R}
+utah = read.csv('utah.csv')
+```
+
+
+```{R}
+maineData = maine$Daily.Max.1.hour.NO2.Concentration
+utah = utah$Daily.Max.1.hour.NO2.Concentration
+```
+
+
+```{R}
+maine.ts <- ts(maineData)
+autoplot(maine.ts)
+```
+
+```{R}
+
+utah.ts <- ts(utah)
+autoplot(utah.ts)
+```
+
+```{R}
+max(utah)
+min(utah)
+mean(utah)
+median(utah)
+```
+
+```{R}
+max(maineData)
+min(maineData)
+mean(maineData)
+median(maineData)
+```
+
