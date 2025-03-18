@@ -46,7 +46,7 @@ The NO₂ concentration trends in **Utah** will showcase higher **seasonal varia
 - Found **stable trends in Maine**, suggesting a more uniform NO₂ distribution  
 
 ## Model Approach
-We use **R** to conduct time series analysis and forecasting due to its robust statistical modeling capabilities. Our workflow includes:
+We use **R** to conduct time series analysis and forecasting due to its robust statistical modeling capabilities. The analysis was performed on the Windows platform. Our workflow includes:
 
 1. **Visualizing Time Series Data**: Understanding trends, seasonal patterns, and fluctuations.  
 2. **ACF and PACF Analysis**: Identifying autocorrelation and lag structures.  
@@ -62,7 +62,9 @@ We use **R** to conduct time series analysis and forecasting due to its robust s
   - RMSE (Root Mean Square Error)  
   - MAE (Mean Absolute Error)  
   - AIC (Akaike Information Criterion)  
-  - BIC (Bayesian Information Criterion)  
+  - BIC (Bayesian Information Criterion)
+  ## Reproduceability
+   To reproduce the results of this analysis, first install the required R packages by running install.packages(c("forecast", "mtsdi", "MTS", "ggplot2", "lubridate", "tidyverse", "ggfortify", "ggpubr", "tseries")) in R. Then, load the datasets maine.csv and utah.csv from the data/ folder, and run the scripts exploratory_analysis.R and modeling.R in the notebooks/ folder to perform the time series analysis and forecasting.
 
 ## Required R Packages
 Ensure the following R packages are installed before running the code:
