@@ -1,0 +1,234 @@
+```{R}
+require("knitr")
+datadir <- "C:/Users/User/Downloads"
+sourcedir <-
+  "C:/Users/User/Downloads"
+opts_knit$set(root.dir = sourcedir)
+library(forecast)
+library(mtsdi)
+library(MTS)
+library(mtsdi)
+library(forecast)
+library(ggplot2)
+library(lubridate)
+library(tidyverse)
+library(ggfortify)
+library(ggpubr)
+library(tseries)
+```
+
+```{R}
+setwd(datadir)
+
+maine = read.csv('maine.csv')
+```
+
+```{R}
+utah = read.csv('utah.csv')
+```
+
+
+```{R}
+maineData = maine$Daily.Max.1.hour.NO2.Concentration
+utah = utah$Daily.Max.1.hour.NO2.Concentration
+```
+
+
+```{R}
+maine.ts <- ts(maineData)
+
+```
+
+```{R}
+
+utah.ts <- ts(utah)
+
+```
+
+#acf and pacf analysis
+```{R}
+
+acf(maine.ts, main="ACF of NO2 in Maine")
+
+
+```
+
+
+```{R}
+pacf(maine.ts, main="PACF of NO2 in Maine")
+
+```
+
+```{R}
+acf(utah.ts, main="ACF of NO2 in Utah")
+
+```
+```{R}
+pacf(utah.ts, main="PACF of NO2 in Utah")
+```
+
+periodograms to check for seasonality
+```{R}
+maine.pg <- spec.pgram(maine.ts, spans=9, demean=T, log='no')
+
+```
+
+
+```{R}
+spec.maine <- data.frame(freq=maine.pg$freq, spec=maine.pg$spec)
+ggplot(spec.maine) + geom_line(aes(x=freq,y=spec)) + 
+  ggtitle("Smooth Periodogram of Maine")
+
+```
+
+```{R}
+max.omega.precip<-maine.pg$freq[which(maine.pg$spec==max(maine.pg$spec))]
+
+# Where is the peak?
+max.omega.precip
+
+# What is the period?
+1/max.omega.precip
+```
+
+
+```{R}
+utah.pg <- spec.pgram(utah.ts, spans=9, demean=T, log='no')
+
+```
+
+
+```{R}
+spec.utah <- data.frame(freq=utah.pg$freq, spec=utah.pg$spec)
+ggplot(spec.utah) + geom_line(aes(x=freq,y=spec)) + 
+  ggtitle("Smooth Periodogram of Utah")
+
+```
+
+```{R}
+max.omega.precip<-utah.pg$freq[which(utah.pg$spec==max(utah.pg$spec))]
+
+# Where is the peak?
+max.omega.precip
+
+# What is the period?
+1/max.omega.precip
+```
+
+360 day period for Maine
+180 day period for Utah
+
+creating season models
+```{R}
+maine.season <- lm(maine.ts ~ sin(2*pi*maine.ts/360)+cos(2*pi*maine.ts/360))
+maine.trend.season <- lm(maine.ts~ maine.ts + sin(2*pi*maine.ts/360) + 
+                         cos(2*pi*maine.ts/360))
+
+AIC(maine.season)
+AIC(maine.trend.season)
+
+
+```
+
+AIC is better for maine.season
+
+```{R}
+utah.season <- lm(utah.ts ~ sin(2*pi*utah.ts/180)+cos(2*pi*utah.ts/180))
+utah.trend.season <- lm(utah.ts~ utah.ts + sin(2*pi*utah.ts/180) + 
+                         cos(2*pi*utah.ts/180))
+
+AIC(utah.season)
+AIC(utah.trend.season)
+
+
+```
+
+AIC is better for utah.season
+
+```{R}
+e.ts.maine <- ts(maine.season$residuals)
+e.ts.utah <- ts(utah.season$residuals)
+```
+
+
+```{R}
+maine.auto <- auto.arima(e.ts.maine, approximation=FALSE, d=5)
+summary(maine.auto)
+```
+
+arima values 1,0,0
+AIC = -1205.39
+BIC= -1197.64
+
+```{R}
+utah.auto <- auto.arima(e.ts.utah, approximation=FALSE)
+summary(utah.auto)
+```
+
+arima values 1,0,1
+AIC=-385.22
+BIC=-373.6
+
+
+Alternate models
+```{R}
+maine.alt1 <- arima(e.ts.maine, order = c(1, 0, 1))
+maine.alt2 <- arima(e.ts.maine, order = c(2, 0, 0))
+
+AIC(maine.alt1)
+BIC(maine.alt1)
+AIC(maine.alt2)
+BIC(maine.alt2)
+```
+
+maine alt1 AIC = -1201.798
+maine alt1 BIC = -1186.298
+maine alt2 AIC = -1202.325
+maine alt2 BIC = -1186.825
+
+```{R}
+utah.alt1 <- arima(e.ts.utah, order = c(0, 0, 1))
+utah.alt2 <- arima(e.ts.utah, order = c(1, 0, 0))
+
+AIC(utah.alt1)
+BIC(utah.alt1)
+AIC(utah.alt2)
+BIC(utah.alt2)
+```
+
+utah alt1 AIC = -380.2886
+utah alt1 BIC = -368.6638
+utah alt2 AIC = -381.1779
+utah alt2 BIC = -369.5531
+
+
+AIC and BIC values are best for maine.auto and utah.auto, so we will use those models
+
+
+
+```{R}
+fit <- auto.arima(maine.ts)
+
+# Forecast for next 120 days
+forecasted_values <- forecast(fit, h = 120)
+
+# Restore the original scale by adding the last value of the series
+#forecasted_values$mean <- forecasted_values$mean + tail(maine.ts$mean, 1)
+
+# Plot
+plot(forecasted_values)
+```
+
+```{R}
+fit <- auto.arima(utah.ts)
+
+# Forecast for next 120 days
+forecasted_values <- forecast(fit, h = 120)
+
+# Restore the original scale by adding the last value of the series
+#forecasted_values$mean <- forecasted_values$mean + tail(maine.ts$mean, 1)
+
+# Plot
+plot(forecasted_values)
+```
+
