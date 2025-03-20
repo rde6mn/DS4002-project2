@@ -94,6 +94,7 @@ To analyze current and future NO₂ trends in Maine and Utah, identifying signif
 ├── results/
 │   ├── plots/
 │   ├── forecasts/
+|---data appendix
 ├── README.md
 
 ## Conclusion
