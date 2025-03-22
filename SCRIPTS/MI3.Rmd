@@ -30,7 +30,8 @@ utah = read.csv('utah.csv')
 
 ```{R}
 maineData = maine$Daily.Max.1.hour.NO2.Concentration
-utah = utah$Daily.Max.1.hour.NO2.Concentration
+
+utah = utah$Daily.Max.1hour.NO2.Concentration
 ```
 
 
@@ -152,13 +153,13 @@ e.ts.utah <- ts(utah.season$residuals)
 
 
 ```{R}
-maine.auto <- auto.arima(e.ts.maine, approximation=FALSE, d=5)
+maine.auto <- auto.arima(e.ts.maine, approximation=FALSE)
 summary(maine.auto)
 ```
 
 arima values 1,0,0
-AIC = -1205.39
-BIC= -1197.64
+AIC = -1203.39
+BIC= -1191.76
 
 ```{R}
 utah.auto <- auto.arima(e.ts.utah, approximation=FALSE)
@@ -206,29 +207,26 @@ AIC and BIC values are best for maine.auto and utah.auto, so we will use those m
 
 
 
+Create forecasts of 180 days (approx 6 months for Maine and Utah)
+
 ```{R}
 fit <- auto.arima(maine.ts)
 
-# Forecast for next 120 days
-forecasted_values <- forecast(fit, h = 120)
+# Forecast for next 180 days
+forecasted_values <- forecast(fit, h = 180)
 
-# Restore the original scale by adding the last value of the series
-#forecasted_values$mean <- forecasted_values$mean + tail(maine.ts$mean, 1)
 
 # Plot
-plot(forecasted_values)
+plot(forecasted_values, main="Maine 6 Month Forecast", ylim=c(0,40))
 ```
 
 ```{R}
 fit <- auto.arima(utah.ts)
 
-# Forecast for next 120 days
-forecasted_values <- forecast(fit, h = 120)
+# Forecast for next 180 days
+forecasted_values <- forecast(fit, h = 180)
 
-# Restore the original scale by adding the last value of the series
-#forecasted_values$mean <- forecasted_values$mean + tail(maine.ts$mean, 1)
 
 # Plot
-plot(forecasted_values)
+plot(forecasted_values, main="Utah 6 Month Forecast",ylim=c(0,40))
 ```
-
