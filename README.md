@@ -80,6 +80,7 @@ library(ggfortify)
 library(ggpubr)
 library(tseries)
 
+```
 
 ## Goal
 To analyze current and future NO₂ trends in Maine and Utah, identifying significant differences and their potential environmental, economic, and policy-driven causes.
